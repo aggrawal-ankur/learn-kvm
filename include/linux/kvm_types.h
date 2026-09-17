@@ -34,6 +34,12 @@
 #include <linux/mutex.h>
 #include <linux/spinlock_types.h>
 
+
+/* 
+	Forward declarations of major KVM data structures.
+	There definitions are available in include/linux/kvm_host.h
+*/
+
 struct kvm;
 struct kvm_async_pf;
 struct kvm_device_ops;
@@ -50,29 +56,27 @@ struct kvm_memslots;
 
 enum kvm_mr_change;
 
-/*
- * Address types:
- *
- *  gva - guest virtual address
- *  gpa - guest physical address
- *  gfn - guest frame number
- *  hva - host virtual address
- *  hpa - host physical address
- *  hfn - host frame number
- */
+/* ---+---+---+--- Address Types ---+---+---+--- */
 
-typedef unsigned long  gva_t;
-typedef u64            gpa_t;
-typedef u64            gfn_t;
+/* [?] */
+#define INVALID_GPA	(~(gpa_t)(0))
 
-#define INVALID_GPA	(~(gpa_t)0)
+typedef unsigned long  gva_t;  /* Guest virtual address  */
+typedef u64            gpa_t;  /* Guest physical address */
+typedef u64            gfn_t;  /* Guest frame number */
 
-typedef unsigned long  hva_t;
-typedef u64            hpa_t;
-typedef u64            hfn_t;
+typedef unsigned long  hva_t;  /* Host virtual address  */
+typedef u64            hpa_t;  /* Host physical address */
+typedef u64            hfn_t;  /* Host frame number */
 
+
+/* [?] */
 typedef hfn_t kvm_pfn_t;
 
+/* ---+---+---+--- Data structures to translate ---+---+---+--- */
+/*               guest addresses to host addresses              */
+
+/* [?] */
 struct gfn_to_hva_cache {
 	u64 generation;
 	gpa_t gpa;
@@ -81,6 +85,7 @@ struct gfn_to_hva_cache {
 	struct kvm_memory_slot *memslot;
 };
 
+/* [?] */
 struct gfn_to_pfn_cache {
 	u64 generation;
 	gpa_t gpa;
@@ -119,6 +124,9 @@ struct kvm_mmu_memory_cache {
 #endif
 
 #define HALT_POLL_HIST_COUNT			32
+
+
+/* ---+---+---+--- Structures for Statistics ---+---+---+--- */
 
 struct kvm_vm_stat_generic {
 	u64 remote_tlb_flush;
