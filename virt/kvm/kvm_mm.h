@@ -59,39 +59,57 @@ struct kvm_follow_pfn {
 kvm_pfn_t hva_to_pfn(struct kvm_follow_pfn *kfp);
 
 #ifdef CONFIG_HAVE_KVM_PFNCACHE
-void gfn_to_pfn_cache_invalidate_start(struct kvm *kvm,
-				       unsigned long start,
-				       unsigned long end);
+void gfn_to_pfn_cache_invalidate_start(
+	struct kvm *kvm,
+	unsigned long start,
+	unsigned long end
+);
+
 #else
-static inline void gfn_to_pfn_cache_invalidate_start(struct kvm *kvm,
-						     unsigned long start,
-						     unsigned long end)
-{
-}
+static inline void gfn_to_pfn_cache_invalidate_start(
+	struct kvm *kvm,
+	unsigned long start,
+	unsigned long end
+){}
 #endif /* HAVE_KVM_PFNCACHE */
+
 
 #ifdef CONFIG_KVM_GUEST_MEMFD
 int kvm_gmem_init(struct module *module);
 void kvm_gmem_exit(void);
-int kvm_gmem_create(struct kvm *kvm, struct kvm_create_guest_memfd *args);
-int kvm_gmem_bind(struct kvm *kvm, struct kvm_memory_slot *slot,
-		  unsigned int fd, uoff_t offset);
+
+int kvm_gmem_create(
+	struct kvm *kvm, 
+	struct kvm_create_guest_memfd *args
+);
+
+int kvm_gmem_bind(
+	struct kvm *kvm, 
+	struct kvm_memory_slot *slot,
+	unsigned int fd, uoff_t offset
+);
+
 void kvm_gmem_unbind(struct kvm_memory_slot *slot);
+
 #else
 static inline int kvm_gmem_init(struct module *module)
 {
 	return 0;
 }
+
 static inline void kvm_gmem_exit(void) {};
-static inline int kvm_gmem_bind(struct kvm *kvm,
-					 struct kvm_memory_slot *slot,
-					 unsigned int fd, uoff_t offset)
-{
+
+static inline int kvm_gmem_bind(
+	struct kvm *kvm,
+	struct kvm_memory_slot *slot,
+	unsigned int fd, uoff_t offset
+){
 	WARN_ON_ONCE(1);
 	return -EIO;
 }
 
-static inline void kvm_gmem_unbind(struct kvm_memory_slot *slot)
+static inline 
+void kvm_gmem_unbind(struct kvm_memory_slot *slot)
 {
 	WARN_ON_ONCE(1);
 }
