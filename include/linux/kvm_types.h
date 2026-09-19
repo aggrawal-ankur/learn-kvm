@@ -36,8 +36,8 @@
 
 
 /* 
-	Forward declarations of major KVM data structures.
-	There definitions are available in include/linux/kvm_host.h
+ * Forward declarations of major KVM data structures.
+ * There definitions are available in include/linux/kvm_host.h
 */
 
 struct kvm;

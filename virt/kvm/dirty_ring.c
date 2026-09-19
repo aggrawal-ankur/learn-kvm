@@ -35,36 +35,49 @@ bool kvm_arch_allow_write_without_running_vcpu(struct kvm *kvm)
 }
 #endif
 
-static u32 kvm_dirty_ring_used(struct kvm_dirty_ring *ring)
+static u32 
+kvm_dirty_ring_used(struct kvm_dirty_ring *ring)
 {
 	return READ_ONCE(ring->dirty_index) - READ_ONCE(ring->reset_index);
 }
 
-static bool kvm_dirty_ring_soft_full(struct kvm_dirty_ring *ring)
+static bool 
+kvm_dirty_ring_soft_full(struct kvm_dirty_ring *ring)
 {
 	return kvm_dirty_ring_used(ring) >= ring->soft_limit;
 }
 
-static bool kvm_dirty_ring_full(struct kvm_dirty_ring *ring)
+static bool 
+kvm_dirty_ring_full(struct kvm_dirty_ring *ring)
 {
 	return kvm_dirty_ring_used(ring) >= ring->size;
 }
 
-static void kvm_reset_dirty_gfn(struct kvm *kvm, u32 slot, u64 offset, u64 mask)
-{
+static void kvm_reset_dirty_gfn(
+	struct kvm *kvm, 
+	u32 slot, 
+	u64 offset, 
+	u64 mask
+){
 	struct kvm_memory_slot *memslot;
 	int as_id, id;
 
 	as_id = slot >> 16;
 	id = (u16)slot;
 
-	if (as_id >= kvm_arch_nr_memslot_as_ids(kvm) || id >= KVM_USER_MEM_SLOTS)
+	if (
+		as_id >= kvm_arch_nr_memslot_as_ids(kvm) || 
+		id >= KVM_USER_MEM_SLOTS
+	)
 		return;
 
 	memslot = id_to_memslot(__kvm_memslots(kvm, as_id), id);
 
-	if (!memslot || offset >= memslot->npages ||
-	    offset + __fls(mask) >= memslot->npages)
+	if (
+		!memslot || 
+		offset >= memslot->npages ||
+		offset + __fls(mask) >= memslot->npages
+	)
 		return;
 
 	KVM_MMU_LOCK(kvm);
@@ -72,15 +85,17 @@ static void kvm_reset_dirty_gfn(struct kvm *kvm, u32 slot, u64 offset, u64 mask)
 	KVM_MMU_UNLOCK(kvm);
 }
 
-int kvm_dirty_ring_alloc(struct kvm *kvm, struct kvm_dirty_ring *ring,
-			 int index, u32 size)
-{
+int kvm_dirty_ring_alloc(
+	struct kvm *kvm, 
+	struct kvm_dirty_ring *ring,
+	int index, u32 size
+){
 	ring->dirty_gfns = vzalloc(size);
 	if (!ring->dirty_gfns)
 		return -ENOMEM;
 
 	ring->size = size / sizeof(struct kvm_dirty_gfn);
-	ring->soft_limit = ring->size - kvm_dirty_ring_get_rsvd_entries(kvm);
+	ring->soft_limit  = ring->size - kvm_dirty_ring_get_rsvd_entries(kvm);
 	ring->dirty_index = 0;
 	ring->reset_index = 0;
 	ring->index = index;
@@ -88,24 +103,29 @@ int kvm_dirty_ring_alloc(struct kvm *kvm, struct kvm_dirty_ring *ring,
 	return 0;
 }
 
-static inline void kvm_dirty_gfn_set_invalid(struct kvm_dirty_gfn *gfn)
+static inline 
+void kvm_dirty_gfn_set_invalid(struct kvm_dirty_gfn *gfn)
 {
 	smp_store_release(&gfn->flags, 0);
 }
 
-static inline void kvm_dirty_gfn_set_dirtied(struct kvm_dirty_gfn *gfn)
+static inline 
+void kvm_dirty_gfn_set_dirtied(struct kvm_dirty_gfn *gfn)
 {
 	gfn->flags = KVM_DIRTY_GFN_F_DIRTY;
 }
 
-static inline bool kvm_dirty_gfn_harvested(struct kvm_dirty_gfn *gfn)
+static inline 
+bool kvm_dirty_gfn_harvested(struct kvm_dirty_gfn *gfn)
 {
 	return smp_load_acquire(&gfn->flags) & KVM_DIRTY_GFN_F_RESET;
 }
 
-int kvm_dirty_ring_reset(struct kvm *kvm, struct kvm_dirty_ring *ring,
-			 int *nr_entries_reset)
-{
+int kvm_dirty_ring_reset(
+	struct kvm *kvm, 
+	struct kvm_dirty_ring *ring,
+	int *nr_entries_reset
+){
 	/*
 	 * To minimize mmu_lock contention, batch resets for harvested entries
 	 * whose gfns are in the same slot, and are within N frame numbers of
@@ -216,18 +236,22 @@ int kvm_dirty_ring_reset(struct kvm *kvm, struct kvm_dirty_ring *ring,
 	return 0;
 }
 
-void kvm_dirty_ring_push(struct kvm_vcpu *vcpu, u32 slot, u64 offset)
+void kvm_dirty_ring_push(
+	struct kvm_vcpu *vcpu, 
+	u32 slot, u64 offset
+)
 {
 	struct kvm_dirty_ring *ring = &vcpu->dirty_ring;
-	struct kvm_dirty_gfn *entry;
+	struct kvm_dirty_gfn  *entry;
 
 	/* It should never get full */
 	WARN_ON_ONCE(kvm_dirty_ring_full(ring));
 
 	entry = &ring->dirty_gfns[ring->dirty_index & (ring->size - 1)];
 
-	entry->slot = slot;
+	entry->slot   = slot;
 	entry->offset = offset;
+
 	/*
 	 * Make sure the data is filled in before we publish this to
 	 * the userspace program.  There's no paired kernel-side reader.
@@ -249,8 +273,10 @@ bool kvm_dirty_ring_check_request(struct kvm_vcpu *vcpu)
 	 * the VCPU from running until the dirty pages are harvested and
 	 * the dirty ring is reset by userspace.
 	 */
-	if (kvm_check_request(KVM_REQ_DIRTY_RING_SOFT_FULL, vcpu) &&
-	    kvm_dirty_ring_soft_full(&vcpu->dirty_ring)) {
+	if (
+		kvm_check_request(KVM_REQ_DIRTY_RING_SOFT_FULL, vcpu) &&
+		kvm_dirty_ring_soft_full(&vcpu->dirty_ring)
+	){
 		kvm_make_request(KVM_REQ_DIRTY_RING_SOFT_FULL, vcpu);
 		vcpu->run->exit_reason = KVM_EXIT_DIRTY_RING_FULL;
 		trace_kvm_dirty_ring_exit(vcpu);
@@ -260,9 +286,10 @@ bool kvm_dirty_ring_check_request(struct kvm_vcpu *vcpu)
 	return false;
 }
 
-struct page *kvm_dirty_ring_get_page(struct kvm_dirty_ring *ring, u32 offset)
+struct page 
+*kvm_dirty_ring_get_page(struct kvm_dirty_ring *ring, u32 offset)
 {
-	return vmalloc_to_page((void *)ring->dirty_gfns + offset * PAGE_SIZE);
+	return vmalloc_to_page((void*)ring->dirty_gfns + offset * PAGE_SIZE);
 }
 
 void kvm_dirty_ring_free(struct kvm_dirty_ring *ring)
