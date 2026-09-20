@@ -73,7 +73,6 @@ struct kvm_irq_level {
 	__u32 level;
 };
 
-
 struct kvm_irqchip {
 	__u32 chip_id;
 	__u32 pad;
@@ -278,6 +277,7 @@ struct kvm_run {
 
 		/* KVM_EXIT_IO */
 		struct {
+
 #define KVM_EXIT_IO_IN  0
 #define KVM_EXIT_IO_OUT 1
 
@@ -316,10 +316,10 @@ struct kvm_run {
 			__u64 ret;
 
 			union {
+
 #ifndef __KERNEL__
 				__u32 longmode;
 #endif
-
 				__u64 flags;
 			};
 		} hypercall;
@@ -357,6 +357,7 @@ struct kvm_run {
 		/* KVM_EXIT_INTERNAL_ERROR */
 		struct {
 			__u32 suberror;
+
 			/* Available with KVM_CAP_INTERNAL_ERROR_DATA: */
 			__u32 ndata;
 			__u64 data[16];
@@ -422,6 +423,7 @@ struct kvm_run {
 
 		/* KVM_EXIT_SYSTEM_EVENT */
 		struct {
+
 #define KVM_SYSTEM_EVENT_SHUTDOWN     1
 #define KVM_SYSTEM_EVENT_RESET        2
 #define KVM_SYSTEM_EVENT_CRASH        3
@@ -434,6 +436,7 @@ struct kvm_run {
 			__u32 ndata;
 
 			union {
+
 #ifndef __KERNEL__
 				__u64 flags;
 #endif
@@ -470,13 +473,14 @@ struct kvm_run {
 			__u8 error;  /* user -> kernel */
 			__u8 pad[7];
 
-#define KVM_MSR_EXIT_REASON_INVAL	(1 << 0)
-#define KVM_MSR_EXIT_REASON_UNKNOWN	(1 << 1)
-#define KVM_MSR_EXIT_REASON_FILTER	(1 << 2)
+#define KVM_MSR_EXIT_REASON_INVAL      (1 << 0)
+#define KVM_MSR_EXIT_REASON_UNKNOWN	   (1 << 1)
+#define KVM_MSR_EXIT_REASON_FILTER     (1 << 2)
+
 #define KVM_MSR_EXIT_REASON_VALID_MASK    (  \ 
 	KVM_MSR_EXIT_REASON_INVAL    |             \
 	KVM_MSR_EXIT_REASON_UNKNOWN  |             \
-	KVM_MSR_EXIT_REASON_FILTER  \
+	KVM_MSR_EXIT_REASON_FILTER   \
 )
 			__u32 reason; /* kernel -> user */
 			__u32 index;  /* kernel -> user */
@@ -510,7 +514,9 @@ struct kvm_run {
 
 		/* KVM_EXIT_MEMORY_FAULT */
 		struct {
+
 #define KVM_MEMORY_EXIT_FLAG_PRIVATE	(1ULL << 3)
+
 			__u64 flags;
 			__u64 gpa;
 			__u64 size;
@@ -548,7 +554,9 @@ struct kvm_run {
 
 		/* KVM_EXIT_ARM_SEA */
 		struct {
+
 #define KVM_EXIT_ARM_SEA_FLAG_GPA_VALID  (1ULL << 0)
+
 			__u64 flags;
 			__u64 esr;
 			__u64 gva;

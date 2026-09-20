@@ -2,10 +2,7 @@
 #ifndef _ASM_X86_KVM_H
 #define _ASM_X86_KVM_H
 
-/*
- * KVM x86 specific structures and definitions
- *
- */
+/* KVM x86 specific structures and definitions */
 
 #include <linux/const.h>
 #include <linux/bits.h>
@@ -61,11 +58,11 @@
 
 /* for KVM_GET_IRQCHIP and KVM_SET_IRQCHIP */
 struct kvm_pic_state {
-	__u8 last_irr;	/* edge detection */
-	__u8 irr;		/* interrupt request register */
-	__u8 imr;		/* interrupt mask register */
-	__u8 isr;		/* interrupt service register */
-	__u8 priority_add;	/* highest irq priority */
+	__u8 last_irr;        /* edge detection */
+	__u8 irr;             /* interrupt request register */
+	__u8 imr;             /* interrupt mask register */
+	__u8 isr;             /* interrupt service register */
+	__u8 priority_add;    /* highest irq priority */
 	__u8 irq_base;
 	__u8 read_reg_select;
 	__u8 poll;
@@ -74,8 +71,8 @@ struct kvm_pic_state {
 	__u8 auto_eoi;
 	__u8 rotate_on_auto_eoi;
 	__u8 special_fully_nested_mode;
-	__u8 init4;		/* true if 4 byte init */
-	__u8 elcr;		/* PIIX edge/trigger selection */
+	__u8 init4;    /* true if 4 byte init */
+	__u8 elcr;     /* PIIX edge/trigger selection */
 	__u8 elcr_mask;
 };
 
@@ -86,6 +83,7 @@ struct kvm_ioapic_state {
 	__u32 id;
 	__u32 irr;
 	__u32 pad;
+
 	union {
 		__u64 bits;
 		struct {
@@ -109,9 +107,9 @@ struct kvm_ioapic_state {
 #define KVM_IRQCHIP_IOAPIC       2
 #define KVM_NR_IRQCHIPS          3
 
-#define KVM_RUN_X86_SMM		 (1 << 0)
-#define KVM_RUN_X86_BUS_LOCK     (1 << 1)
-#define KVM_RUN_X86_GUEST_MODE   (1 << 2)
+#define KVM_RUN_X86_SMM           (1 << 0)
+#define KVM_RUN_X86_BUS_LOCK      (1 << 1)
+#define KVM_RUN_X86_GUEST_MODE    (1 << 2)
 
 /* for KVM_GET_REGS and KVM_SET_REGS */
 struct kvm_regs {
@@ -151,7 +149,8 @@ struct kvm_sregs {
 	/* out (KVM_GET_SREGS) / in (KVM_SET_SREGS) */
 	struct kvm_segment cs, ds, es, fs, gs, ss;
 	struct kvm_segment tr, ldt;
-	struct kvm_dtable gdt, idt;
+	struct kvm_dtable  gdt, idt;
+
 	__u64 cr0, cr2, cr3, cr4, cr8;
 	__u64 efer;
 	__u64 apic_base;
@@ -162,7 +161,8 @@ struct kvm_sregs2 {
 	/* out (KVM_GET_SREGS2) / in (KVM_SET_SREGS2) */
 	struct kvm_segment cs, ds, es, fs, gs, ss;
 	struct kvm_segment tr, ldt;
-	struct kvm_dtable gdt, idt;
+	struct kvm_dtable  gdt, idt;
+
 	__u64 cr0, cr2, cr3, cr4, cr8;
 	__u64 efer;
 	__u64 apic_base;
@@ -202,7 +202,7 @@ struct kvm_msrs {
 
 /* for KVM_GET_MSR_INDEX_LIST */
 struct kvm_msr_list {
-	__u32 nmsrs; /* number of msrs in entries */
+	__u32 nmsrs;  /* number of msrs in entries */
 	__DECLARE_FLEX_ARRAY(__u32, indices);
 };
 
@@ -211,10 +211,14 @@ struct kvm_msr_list {
 
 /* for KVM_X86_SET_MSR_FILTER */
 struct kvm_msr_filter_range {
+
 #define KVM_MSR_FILTER_READ  (1 << 0)
 #define KVM_MSR_FILTER_WRITE (1 << 1)
-#define KVM_MSR_FILTER_RANGE_VALID_MASK (KVM_MSR_FILTER_READ | \
-					 KVM_MSR_FILTER_WRITE)
+
+#define KVM_MSR_FILTER_RANGE_VALID_MASK  (    \
+	KVM_MSR_FILTER_READ | KVM_MSR_FILTER_WRITE  \
+)
+
 	__u32 flags;
 	__u32 nmsrs; /* number of msrs in bitmap */
 	__u32 base;  /* MSR index the bitmap starts at */
@@ -223,11 +227,14 @@ struct kvm_msr_filter_range {
 
 #define KVM_MSR_FILTER_MAX_RANGES 16
 struct kvm_msr_filter {
+
 #ifndef __KERNEL__
 #define KVM_MSR_FILTER_DEFAULT_ALLOW (0 << 0)
 #endif
+
 #define KVM_MSR_FILTER_DEFAULT_DENY  (1 << 0)
 #define KVM_MSR_FILTER_VALID_MASK (KVM_MSR_FILTER_DEFAULT_DENY)
+
 	__u32 flags;
 	struct kvm_msr_filter_range ranges[KVM_MSR_FILTER_MAX_RANGES];
 };
@@ -259,9 +266,9 @@ struct kvm_cpuid_entry2 {
 	__u32 padding[3];
 };
 
-#define KVM_CPUID_FLAG_SIGNIFCANT_INDEX		(1 << 0)
-#define KVM_CPUID_FLAG_STATEFUL_FUNC		(1 << 1)
-#define KVM_CPUID_FLAG_STATE_READ_NEXT		(1 << 2)
+#define KVM_CPUID_FLAG_SIGNIFCANT_INDEX    (1 << 0)
+#define KVM_CPUID_FLAG_STATEFUL_FUNC       (1 << 1)
+#define KVM_CPUID_FLAG_STATE_READ_NEXT     (1 << 2)
 
 /* for KVM_SET_CPUID2 */
 struct kvm_cpuid2 {
@@ -274,16 +281,20 @@ struct kvm_cpuid2 {
 struct kvm_pit_channel_state {
 	__u32 count; /* can be 65536 */
 	__u16 latched_count;
-	__u8 count_latched;
-	__u8 status_latched;
-	__u8 status;
-	__u8 read_state;
-	__u8 write_state;
-	__u8 write_latch;
-	__u8 rw_mode;
-	__u8 mode;
-	__u8 bcd;
-	__u8 gate;
+	__u8  count_latched;
+
+	__u8  status_latched;
+	__u8  status;
+
+	__u8  read_state;
+	__u8  write_state;
+	__u8  write_latch;
+
+	__u8  rw_mode;
+	__u8  mode;
+
+	__u8  bcd;
+	__u8  gate;
 	__s64 count_load_time;
 };
 
@@ -295,11 +306,12 @@ struct kvm_debug_exit_arch {
 	__u64 dr7;
 };
 
-#define KVM_GUESTDBG_USE_SW_BP		0x00010000
-#define KVM_GUESTDBG_USE_HW_BP		0x00020000
-#define KVM_GUESTDBG_INJECT_DB		0x00040000
-#define KVM_GUESTDBG_INJECT_BP		0x00080000
-#define KVM_GUESTDBG_BLOCKIRQ		0x00100000
+#define KVM_GUESTDBG_USE_SW_BP    0x00010000
+#define KVM_GUESTDBG_USE_HW_BP    0x00020000
+#define KVM_GUESTDBG_INJECT_DB    0x00040000
+#define KVM_GUESTDBG_INJECT_BP    0x00080000
+#define KVM_GUESTDBG_BLOCKIRQ     0x00100000
+
 
 /* for KVM_SET_GUEST_DEBUG */
 struct kvm_guest_debug_arch {
@@ -339,37 +351,43 @@ struct kvm_reinject_control {
 /* for KVM_GET/SET_VCPU_EVENTS */
 struct kvm_vcpu_events {
 	struct {
-		__u8 injected;
-		__u8 nr;
-		__u8 has_error_code;
-		__u8 pending;
+		__u8  injected;
+		__u8  nr;
+		__u8  has_error_code;
+		__u8  pending;
 		__u32 error_code;
 	} exception;
+
 	struct {
 		__u8 injected;
 		__u8 nr;
 		__u8 soft;
 		__u8 shadow;
 	} interrupt;
+
 	struct {
 		__u8 injected;
 		__u8 pending;
 		__u8 masked;
 		__u8 pad;
 	} nmi;
+
 	__u32 sipi_vector;
 	__u32 flags;
+
 	struct {
 		__u8 smm;
 		__u8 pending;
 		__u8 smm_inside_nmi;
 		__u8 latched_init;
 	} smi;
+
 	struct {
 		__u8 pending;
 	} triple_fault;
-	__u8 reserved[26];
-	__u8 exception_has_payload;
+
+	__u8  reserved[26];
+	__u8  exception_has_payload;
 	__u64 exception_payload;
 };
 
@@ -424,14 +442,16 @@ struct kvm_xcrs {
 	reg == KVM_REG_GUEST_SSP ? KVM_REG_SIZE_U64 : 0;			\
 })
 
-#define KVM_X86_REG_TYPE_SIZE(type, reg)					\
-({										\
-	__u64 type_size = (__u64)type << 32;					\
-										\
-	type_size |= type == KVM_X86_REG_TYPE_MSR ? KVM_REG_SIZE_U64 :		\
-		     type == KVM_X86_REG_TYPE_KVM ? KVM_X86_KVM_REG_SIZE(reg) :	\
-		     0;								\
-	type_size;								\
+#define KVM_X86_REG_TYPE_SIZE(type, reg)    \
+({                                          \
+	__u64 type_size = (__u64)type << 32;      \
+                                            \
+	type_size |= (type == KVM_X86_REG_TYPE_MSR)      \
+               ? KVM_REG_SIZE_U64                  \
+               : (type == KVM_X86_REG_TYPE_KVM)    \
+                 ? KVM_X86_KVM_REG_SIZE(reg)       \
+                 : 0                               \
+	type_size;                                       \
 })
 
 #define KVM_X86_REG_ID(type, index)				\
@@ -439,6 +459,7 @@ struct kvm_xcrs {
 
 #define KVM_X86_REG_MSR(index)					\
 	KVM_X86_REG_ID(KVM_X86_REG_TYPE_MSR, index)
+
 #define KVM_X86_REG_KVM(index)					\
 	KVM_X86_REG_ID(KVM_X86_REG_TYPE_KVM, index)
 
@@ -450,9 +471,7 @@ struct kvm_xcrs {
 #define KVM_SYNC_X86_EVENTS    (1UL << 2)
 
 #define KVM_SYNC_X86_VALID_FIELDS \
-	(KVM_SYNC_X86_REGS| \
-	 KVM_SYNC_X86_SREGS| \
-	 KVM_SYNC_X86_EVENTS)
+	(KVM_SYNC_X86_REGS | KVM_SYNC_X86_SREGS | KVM_SYNC_X86_EVENTS)
 
 /* kvm_sync_regs struct included by kvm_run struct */
 struct kvm_sync_regs {
@@ -461,7 +480,7 @@ struct kvm_sync_regs {
 	 * data fields from them inside KVM to prevent TOCTOU and
 	 * double-fetch types of vulnerabilities.
 	 */
-	struct kvm_regs regs;
+	struct kvm_regs  regs;
 	struct kvm_sregs sregs;
 	struct kvm_vcpu_events events;
 };
@@ -583,8 +602,8 @@ struct kvm_x86_mce {
 	__u64 addr;
 	__u64 misc;
 	__u64 mcg_status;
-	__u8 bank;
-	__u8 pad1[7];
+	__u8  bank;
+	__u8  pad1[7];
 	__u64 pad2[3];
 };
 
@@ -607,30 +626,37 @@ struct kvm_xen_hvm_config {
 	__u32 msr;
 	__u64 blob_addr_32;
 	__u64 blob_addr_64;
-	__u8 blob_size_32;
-	__u8 blob_size_64;
-	__u8 pad2[30];
+	__u8  blob_size_32;
+	__u8  blob_size_64;
+	__u8  pad2[30];
 };
 
 struct kvm_xen_hvm_attr {
 	__u16 type;
 	__u16 pad[3];
+
 	union {
 		__u8 long_mode;
 		__u8 vector;
 		__u8 runstate_update_flag;
+
 		union {
 			__u64 gfn;
+
 #define KVM_XEN_INVALID_GFN ((__u64)-1)
+
 			__u64 hva;
 		} shared_info;
+
 		struct {
 			__u32 send_port;
 			__u32 type; /* EVTCHNSTAT_ipi / EVTCHNSTAT_interdomain */
 			__u32 flags;
+
 #define KVM_XEN_EVTCHN_DEASSIGN		(1 << 0)
 #define KVM_XEN_EVTCHN_UPDATE		(1 << 1)
 #define KVM_XEN_EVTCHN_RESET		(1 << 2)
+
 			/*
 			 * Events sent by the guest are either looped back to
 			 * the guest itself (potentially on a different port#)
@@ -642,13 +668,16 @@ struct kvm_xen_hvm_attr {
 					__u32 vcpu;
 					__u32 priority;
 				} port;
+
 				struct {
 					__u32 port; /* Zero for eventfd */
 					__s32 fd;
 				} eventfd;
+
 				__u32 padding[4];
 			} deliver;
 		} evtchn;
+
 		__u32 xen_version;
 		__u64 pad[8];
 	} u;
@@ -659,22 +688,29 @@ struct kvm_xen_hvm_attr {
 #define KVM_XEN_ATTR_TYPE_LONG_MODE		0x0
 #define KVM_XEN_ATTR_TYPE_SHARED_INFO		0x1
 #define KVM_XEN_ATTR_TYPE_UPCALL_VECTOR		0x2
+
 /* Available with KVM_CAP_XEN_HVM / KVM_XEN_HVM_CONFIG_EVTCHN_SEND */
 #define KVM_XEN_ATTR_TYPE_EVTCHN		0x3
 #define KVM_XEN_ATTR_TYPE_XEN_VERSION		0x4
+
 /* Available with KVM_CAP_XEN_HVM / KVM_XEN_HVM_CONFIG_RUNSTATE_UPDATE_FLAG */
 #define KVM_XEN_ATTR_TYPE_RUNSTATE_UPDATE_FLAG	0x5
+
 /* Available with KVM_CAP_XEN_HVM / KVM_XEN_HVM_CONFIG_SHARED_INFO_HVA */
 #define KVM_XEN_ATTR_TYPE_SHARED_INFO_HVA	0x6
 
 struct kvm_xen_vcpu_attr {
 	__u16 type;
 	__u16 pad[3];
+
 	union {
 		__u64 gpa;
+
 #define KVM_XEN_INVALID_GPA ((__u64)-1)
+
 		__u64 hva;
 		__u64 pad[8];
+
 		struct {
 			__u64 state;
 			__u64 state_entry_time;
@@ -683,12 +719,15 @@ struct kvm_xen_vcpu_attr {
 			__u64 time_blocked;
 			__u64 time_offline;
 		} runstate;
+
 		__u32 vcpu_id;
+
 		struct {
 			__u32 port;
 			__u32 priority;
 			__u64 expires_ns;
 		} timer;
+
 		__u8 vector;
 	} u;
 };
@@ -712,6 +751,7 @@ enum sev_cmd_id {
 	/* Guest initialization commands */
 	KVM_SEV_INIT = 0,
 	KVM_SEV_ES_INIT,
+
 	/* Guest launch commands */
 	KVM_SEV_LAUNCH_START,
 	KVM_SEV_LAUNCH_UPDATE_DATA,
@@ -719,24 +759,30 @@ enum sev_cmd_id {
 	KVM_SEV_LAUNCH_SECRET,
 	KVM_SEV_LAUNCH_MEASURE,
 	KVM_SEV_LAUNCH_FINISH,
+
 	/* Guest migration commands (outgoing) */
 	KVM_SEV_SEND_START,
 	KVM_SEV_SEND_UPDATE_DATA,
 	KVM_SEV_SEND_UPDATE_VMSA,
 	KVM_SEV_SEND_FINISH,
+
 	/* Guest migration commands (incoming) */
 	KVM_SEV_RECEIVE_START,
 	KVM_SEV_RECEIVE_UPDATE_DATA,
 	KVM_SEV_RECEIVE_UPDATE_VMSA,
 	KVM_SEV_RECEIVE_FINISH,
+
 	/* Guest status and debug commands */
 	KVM_SEV_GUEST_STATUS,
 	KVM_SEV_DBG_DECRYPT,
 	KVM_SEV_DBG_ENCRYPT,
+
 	/* Guest certificates commands */
 	KVM_SEV_CERT_EXPORT,
+
 	/* Attestation report */
 	KVM_SEV_GET_ATTESTATION_REPORT,
+
 	/* Guest Migration Extension */
 	KVM_SEV_SEND_CANCEL,
 
@@ -818,7 +864,7 @@ struct kvm_sev_dbg {
 };
 
 struct kvm_sev_attestation_report {
-	__u8 mnonce[16];
+	__u8  mnonce[16];
 	__u64 uaddr;
 	__u32 len;
 	__u32 pad0;
@@ -878,9 +924,9 @@ struct kvm_sev_receive_update_data {
 
 struct kvm_sev_snp_launch_start {
 	__u64 policy;
-	__u8 gosvw[16];
+	__u8  gosvw[16];
 	__u16 flags;
-	__u8 pad0[6];
+	__u8  pad0[6];
 	__u64 pad1[4];
 };
 
@@ -910,11 +956,11 @@ struct kvm_sev_snp_launch_update {
 struct kvm_sev_snp_launch_finish {
 	__u64 id_block_uaddr;
 	__u64 id_auth_uaddr;
-	__u8 id_block_en;
-	__u8 auth_key_en;
-	__u8 vcek_disabled;
-	__u8 host_data[KVM_SEV_SNP_FINISH_DATA_SIZE];
-	__u8 pad0[3];
+	__u8  id_block_en;
+	__u8  auth_key_en;
+	__u8  vcek_disabled;
+	__u8  host_data[KVM_SEV_SNP_FINISH_DATA_SIZE];
+	__u8  pad0[3];
 	__u16 flags;
 	__u64 pad1[4];
 };
@@ -955,6 +1001,7 @@ struct kvm_hyperv_eventfd {
 
 #define KVM_PMU_MASKED_ENTRY_EVENT_SELECT \
 	(__GENMASK_ULL(7, 0) | __GENMASK_ULL(35, 32))
+
 #define KVM_PMU_MASKED_ENTRY_UMASK_MASK		(__GENMASK_ULL(63, 56))
 #define KVM_PMU_MASKED_ENTRY_UMASK_MATCH	(__GENMASK_ULL(15, 8))
 #define KVM_PMU_MASKED_ENTRY_EXCLUDE		(_BITULL(55))
@@ -962,7 +1009,7 @@ struct kvm_hyperv_eventfd {
 
 /* for KVM_{GET,SET,HAS}_DEVICE_ATTR */
 #define KVM_VCPU_TSC_CTRL 0 /* control group for the timestamp counter (TSC) */
-#define   KVM_VCPU_TSC_OFFSET 0 /* attribute for the TSC offset */
+#define KVM_VCPU_TSC_OFFSET 0 /* attribute for the TSC offset */
 
 /* x86-specific KVM_EXIT_HYPERCALL flags. */
 #define KVM_EXIT_HYPERCALL_LONG_MODE	_BITULL(0)
@@ -982,7 +1029,6 @@ enum kvm_tdx_cmd_id {
 	KVM_TDX_INIT_MEM_REGION,
 	KVM_TDX_FINALIZE_VM,
 	KVM_TDX_GET_CPUID,
-
 	KVM_TDX_CMD_NR_MAX,
 };
 
